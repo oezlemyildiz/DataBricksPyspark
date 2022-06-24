@@ -10,11 +10,11 @@
 
 # COMMAND ----------
 
-"""
-df_circuits = spark.read\
-.options(header=True, inferschema=True)\
-.csv('/mnt/formula1dlv4/raw/circuits.csv')
-"""
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+
 
 # COMMAND ----------
 
@@ -28,22 +28,25 @@ circuits_schema = StructType(fields=
      StructField("name", StringType(),True),
      StructField("location", StringType(),True),
      StructField("country", StringType(),True),
-     StructField("lat", StringType(),True),
-     StructField("lng", StringType(),True),
+     StructField("lat", DoubleType(),True),
+     StructField("lng", DoubleType(),True),
      StructField("alt", StringType(),True),
-     StructField("url", StringType(),True)]
-     #StructField("ingestionDate", DateType(),False)
-)
+     StructField("url", StringType(),True)])
 
 # COMMAND ----------
 
+"""
 df_circuits = spark.read\
-.options(header=True, schema=circuits_schema)\
+.options(header=True, inferschema=True)\
 .csv('/mnt/formula1dlv4/raw/circuits.csv')
+"""
 
-# COMMAND ----------
+#.csv('/mnt/formula1dlv4/raw/circuits.csv')
+df_circuits = spark.read\
+.option("header",True)\
+.schema(circuits_schema)\
+.csv(f"{raw_folder_path}/circuits.csv")
 
-display(df_circuits)
 
 # COMMAND ----------
 
@@ -78,24 +81,17 @@ df_circuits_renammed= df_circuits_selected\
 
 # COMMAND ----------
 
-display(df_circuits_renammed)
+#df_circuits_renammed.write.mode("overwrite").parquet("dbfs:/mnt/formula1dlv4/processed/circuits")
+#df_circuits_renammed.write.mode("overwrite").parquet("/mnt/formula1dlv4/processed/circuits")
+df_circuits_renammed.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
+
 
 # COMMAND ----------
 
-df_circuits_renammed.write.mode("overwrite").parquet("dbfs:/mnt/formula1dlv4/processed/circuits")
-
-# COMMAND ----------
-
-df_circuits_parguet= spark.read.parquet("dbfs:/mnt/formula1dlv4/processed/circuits")
-
-# COMMAND ----------
-
-display(df_circuits_parguet)
-
-# COMMAND ----------
-
-# MAGIC %fs
-# MAGIC ls /mnt/formula1dlv4/processed/circuits
+#df_circuits_parguet= spark.read.parquet("dbfs:/mnt/formula1dlv4/processed/circuits")
+#display(df_circuits_parguet)
+#%fs
+#ls /mnt/formula1dlv4/processed/circuits
 
 # COMMAND ----------
 
