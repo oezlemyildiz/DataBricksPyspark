@@ -8,7 +8,7 @@ print(v_result)
 
 # COMMAND ----------
 
-v_result=dbutils.notebook.run("2.ingest race.csv file",0,{"p_data_source":"Ergast API"})
+v_result=dbutils.notebook.run("2.ingest races.csv file",0,{"p_data_source":"Ergast API"})
 print(v_result)
 
 # COMMAND ----------
