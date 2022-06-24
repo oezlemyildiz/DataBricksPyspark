@@ -1,6 +1,19 @@
 # Databricks notebook source
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
+dbutils.widgets.text("p_data_source", "")
+v_data_source= dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
 from pyspark.sql.types import StructType, StructField,IntegerType,StringType,DateType, FloatType
-result_schema = StructType(fields=[
+results_schema = StructType(fields=[
     StructField("constructorId", IntegerType(),True),
     StructField("driverId", IntegerType(),False),
     StructField("fastestLap", IntegerType(),False),
@@ -24,8 +37,8 @@ result_schema = StructType(fields=[
 # COMMAND ----------
 
 df_result = spark.read\
-.schema(result_schema)\
-.json("/mnt/formula1dlv4/raw/results.json")
+.schema(results_schema)\
+.json(f"{raw_folder_path}/results.json")
 
 # COMMAND ----------
 
@@ -54,7 +67,7 @@ df_result_final = df_result_drop\
 
 # COMMAND ----------
 
-df_result_final.write.mode("overwrite").partitionBy("race_id").parquet("/mnt/formula1dlv4/processed/results.json")
+df_result_final.write.mode("overwrite").partitionBy("race_id").parquet(f"{processed_folder_path}/results")
 
 # COMMAND ----------
 
@@ -63,3 +76,4 @@ df_result_final.write.mode("overwrite").partitionBy("race_id").parquet("/mnt/for
 
 # COMMAND ----------
 
+dbutils.notebook.exit("Success")
