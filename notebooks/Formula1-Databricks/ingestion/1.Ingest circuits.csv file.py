@@ -7,6 +7,7 @@
 #display(dbutils.fs.mounts())
 #%fs
 #ls /mnt/formula1dlv4/raw
+#dbutils.widgets.help()
 
 # COMMAND ----------
 
@@ -15,6 +16,12 @@
 # COMMAND ----------
 
 # MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
+dbutils.widgets.text("p_data_source", "")
+v_data_source= dbutils.widgets.get("p_data_source")
+
 
 # COMMAND ----------
 
@@ -74,11 +81,13 @@ df_circuits_selected= df_circuits.select(col("circuitId").alias("circuit_Id"),
 # COMMAND ----------
 
 #.withColumn("ingestion_date",current_timestamp())\
+#.withColumn("env",lit("eargast"))
 from pyspark.sql.functions import current_timestamp, lit
 df_circuits_renammed= df_circuits_selected\
 .withColumnRenamed("circuit_lat", "circuit_latitute")\
 .withColumnRenamed("circuit_lng", "circuit_lengitute")\
-.withColumn("env",lit("eargast"))
+.withColumn("env",lit(v_data_source))
+
 
 # COMMAND ----------
 
@@ -90,6 +99,14 @@ df_circuits_final= f_add_ingestion_date(df_circuits_renammed)
 #df_circuits_renammed.write.mode("overwrite").parquet("/mnt/formula1dlv4/processed/circuits")
 df_circuits_final.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
 
+
+# COMMAND ----------
+
+display(spark.read.parquet(f"{processed_folder_path}/circuits"))
+
+# COMMAND ----------
+
+dbutils.notebook.exit("Success")
 
 # COMMAND ----------
 
