@@ -14,7 +14,7 @@
 
 # COMMAND ----------
 
-
+# MAGIC %run "../includes/common_functions"
 
 # COMMAND ----------
 
@@ -55,7 +55,8 @@ df_circuits.printSchema()
 
 # COMMAND ----------
 
-"""display(df_circuits.select("circuitId","circuitRef"))
+"""
+display(df_circuits.select("circuitId","circuitRef"))
 display(df_circuits.select(df_circuits.circuitId,df_circuits.circuitRef))
 display(df_circuits.select(df_circuits["circuitId"],df_circuits["circuitRef"]))
 """
@@ -72,18 +73,22 @@ df_circuits_selected= df_circuits.select(col("circuitId").alias("circuit_Id"),
 
 # COMMAND ----------
 
+#.withColumn("ingestion_date",current_timestamp())\
 from pyspark.sql.functions import current_timestamp, lit
 df_circuits_renammed= df_circuits_selected\
 .withColumnRenamed("circuit_lat", "circuit_latitute")\
 .withColumnRenamed("circuit_lng", "circuit_lengitute")\
-.withColumn("ingestion_date",current_timestamp())\
 .withColumn("env",lit("eargast"))
+
+# COMMAND ----------
+
+df_circuits_final= f_add_ingestion_date(df_circuits_renammed)
 
 # COMMAND ----------
 
 #df_circuits_renammed.write.mode("overwrite").parquet("dbfs:/mnt/formula1dlv4/processed/circuits")
 #df_circuits_renammed.write.mode("overwrite").parquet("/mnt/formula1dlv4/processed/circuits")
-df_circuits_renammed.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
+df_circuits_final.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
 
 
 # COMMAND ----------
@@ -92,6 +97,3 @@ df_circuits_renammed.write.mode("overwrite").parquet(f"{processed_folder_path}/c
 #display(df_circuits_parguet)
 #%fs
 #ls /mnt/formula1dlv4/processed/circuits
-
-# COMMAND ----------
-
