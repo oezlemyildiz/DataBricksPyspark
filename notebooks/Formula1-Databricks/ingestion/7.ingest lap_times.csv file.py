@@ -1,4 +1,17 @@
 # Databricks notebook source
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
+dbutils.widgets.text("p_data_source", "")
+v_data_source= dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
 from pyspark.sql.types import StructType, StructField,IntegerType,StringType,DateType
 lap_times_schema=StructType(fields=[
     StructField("raceId",IntegerType(),False),
@@ -14,7 +27,7 @@ lap_times_schema=StructType(fields=[
 #.csv("/mnt/formula1dlv4/raw/lap_times/lap_times_split*.csv")
 df_lap_times= spark.read\
 .schema(lap_times_schema)\
-.csv("/mnt/formula1dlv4/raw/lap_times/")
+.csv(f"{raw_folder_path}/lap_times/")
 
 # COMMAND ----------
 
@@ -30,7 +43,7 @@ df_lap_times_renamed= df_lap_times.withColumnRenamed("raceId","race_id")\
 
 # COMMAND ----------
 
-df_lap_times_renamed.write.mode("overwrite").parquet("/mnt/formula1dlv4/processed/lap_times")
+df_lap_times_renamed.write.mode("overwrite").parquet(f"{processed_folder_path}/lap_times")
 
 # COMMAND ----------
 
@@ -38,3 +51,4 @@ display(spark.read.parquet("/mnt/formula1dlv4/processed/lap_times"))
 
 # COMMAND ----------
 
+dbutils.notebook.exit("Success")
