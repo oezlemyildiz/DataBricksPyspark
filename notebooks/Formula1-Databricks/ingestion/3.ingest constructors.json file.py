@@ -1,9 +1,22 @@
 # Databricks notebook source
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
+dbutils.widgets.text("p_data_source", "")
+
+
+# COMMAND ----------
+
 #Hive DDL style schema
 constructors_schema = "constructorId INTEGER,constructorRef STRING,name STRING,nationality STRING,url STRING"
 df_constructors = spark.read\
 .schema(constructors_schema)\
-.json("/mnt/formula1dlv4/raw/constructors.json")
+.json(f"{raw_folder_path}/constructors.json")
 
 # COMMAND ----------
 
@@ -27,7 +40,7 @@ display(df_constructors_final)
 
 # COMMAND ----------
 
-df_constructors_final.write.mode("overwrite").parquet("/mnt/formula1dlv4/processed/constructors")
+df_constructors_final.write.mode("overwrite").parquet(f"{processed_folder_path}/constructors")
 
 # COMMAND ----------
 
@@ -36,3 +49,4 @@ df_constructors_final.write.mode("overwrite").parquet("/mnt/formula1dlv4/process
 
 # COMMAND ----------
 
+dbutils.notebook.exit("Success")
