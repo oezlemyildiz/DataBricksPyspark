@@ -9,6 +9,19 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
+dbutils.widgets.text("p_data_source", "")
+v_data_source= dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DoubleType,DateType
 races_schema = StructType(fields=
      [StructField("raceId", IntegerType(),False),
@@ -26,7 +39,7 @@ races_schema = StructType(fields=
 df_races = spark.read\
 .option("header",True)\
 .schema(races_schema)\
-.csv('/mnt/formula1dlv4/raw/races.csv')
+.csv(f"{raw_folder_path}/races.csv")
 
 
 # COMMAND ----------
@@ -53,7 +66,12 @@ df_races_final= df_races_withcolumn.drop(col("url"))
 
 # COMMAND ----------
 
-df_races_final.write.mode("overwrite").parquet("/mnt/formula1dlv4/processed/races")
+df_races_final.write.mode("overwrite").partitionBy("race_year").parquet(f"{processed_folder_path}/races")
 
 # COMMAND ----------
 
+display(spark.read.parquet("/mnt/formula1dlv4/processed/races"))
+
+# COMMAND ----------
+
+dbutils.notebook.exit("Success")
