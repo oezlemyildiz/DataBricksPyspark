@@ -25,13 +25,13 @@ display(df_pit_stops)
 
 from pyspark.sql.functions import current_timestamp, col, lit, concat
 df_pit_stops_renamed= df_pit_stops.withColumnRenamed("raceId","race_id")\
-.withColumnRenamed("driverId","driver_id")\
+.withColumnRenamed("raceId","race_id")\
 .withColumnRenamed("driverId","driverId")\
 .withColumn("ingestion_date", current_timestamp())
 
 # COMMAND ----------
 
-df_pit_stops_renamed.write.mode("overwrite").parquet("/mnt/formula1dlv4/processed/pit_stops")
+df_lap_times_renamed.write.mode("overwrite").parquet("/mnt/formula1dlv4/processed/pit_stops")
 
 # COMMAND ----------
 
